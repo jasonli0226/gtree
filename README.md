@@ -1,5 +1,14 @@
 # gTree
 
+Latest Version: `1.0.0`
+
+Updated Log:
+
+```
+1.0.0     init version
+
+```
+
 &nbsp;
 
 ## Build
