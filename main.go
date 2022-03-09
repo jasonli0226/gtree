@@ -65,9 +65,13 @@ func main() {
 				path := c.String("path")
 				target := c.String("target")
 				ignoreDir := c.String("ignore-dir")
-				mode := c.Int("mode")
+				mode := utils.SearchDisplayNormal
 
-				var search = utils.Search{Target: target, IgnoreDir: ignoreDir, Mode: utils.SearchMode(mode)}
+				if c.Bool("file-mode") {
+					mode = utils.SearchDisplayFileMode
+				}
+
+				var search = utils.Search{Target: target, IgnoreDir: ignoreDir, Mode: mode}
 
 				search.Run(path)
 				return nil
@@ -95,10 +99,9 @@ func getSearchFlags() []cli.Flag {
 			Usage: "ignore specified directory",
 			Value: "",
 		},
-		cli.IntFlag{
-			Name:  "mode, m",
-			Usage: "display mode: Normal - 0, Basic - 1",
-			Value: int(utils.SearchDisplayNormal),
+		cli.BoolFlag{
+			Name:  "file-mode, f",
+			Usage: "display file mode - directory or file",
 		},
 	}
 

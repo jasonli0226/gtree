@@ -30,10 +30,10 @@ func (r *Remove) Run(path string) {
 		if isTarget || isPattern {
 			if file.IsDir() {
 				os.RemoveAll(path)
-				fmt.Println("deleted directory ==== \t\t", path)
+				fmt.Println("deleted directory ======== \t", path)
 			} else if !file.IsDir() {
 				os.Remove(path)
-				fmt.Println("deleted file ==== \t\t", path)
+				fmt.Println("deleted file ======== \t", path)
 			}
 		} else {
 			if file.IsDir() && r.IsRecursive {

@@ -11,7 +11,7 @@ type SearchMode uint8
 
 const (
 	SearchDisplayNormal SearchMode = iota
-	SearchDisplayBasic
+	SearchDisplayFileMode
 )
 
 // Search - Search specified Files
