@@ -6,6 +6,7 @@ Updated Log:
 
 ```
 1.0.0     init version
+1.0.1     added search command
 
 ```
 
@@ -32,8 +33,8 @@ go build -o build
 
 - [ ] list - add report for file count
 
-- [ ] (2022-03) search - search for specific files
+- [x] (2022-03) search - search for specified files
 
-- [ ] (2022-03) search - search for specific file patterns/matches
+- [ ] (2022-03) search - search for specified file patterns/matches
 
 &nbsp;

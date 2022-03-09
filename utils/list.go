@@ -14,7 +14,7 @@ type List struct {
 	ShowTotalSize bool
 	StartPath     string
 	Pattern       string
-	IgnoreFolder  string
+	IgnoreDir     string
 	IgnoreFile    string
 }
 
@@ -44,7 +44,7 @@ func (gl *List) listAllFiles(prefixPad string, path string) {
 	for idx, file := range files {
 		if file.IsDir() {
 			fmt.Println(padding+"|---", file.Name())
-			if file.Name() != gl.IgnoreFolder {
+			if file.Name() != gl.IgnoreDir {
 				gl.listAllFiles(padding+"|   ", filepath.Join(path, file.Name()))
 			}
 

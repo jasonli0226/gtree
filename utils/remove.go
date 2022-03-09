@@ -24,16 +24,16 @@ func (r *Remove) Run(path string) {
 
 	for _, file := range files {
 		path := filepath.Join(path, file.Name())
-		targetCond := r.Target != "" && file.Name() == r.Target
-		patternCond, _ := filepath.Match(r.Pattern, file.Name())
+		isTarget := r.Target != "" && file.Name() == r.Target
+		isPattern, _ := filepath.Match(r.Pattern, file.Name())
 
-		if targetCond || patternCond {
+		if isTarget || isPattern {
 			if file.IsDir() {
 				os.RemoveAll(path)
-				fmt.Println("Deleted folder =================", path)
+				fmt.Println("deleted directory ==== \t\t", path)
 			} else if !file.IsDir() {
 				os.Remove(path)
-				fmt.Println("Deleted file =================", path)
+				fmt.Println("deleted file ==== \t\t", path)
 			}
 		} else {
 			if file.IsDir() && r.IsRecursive {
