@@ -2,27 +2,66 @@ package tree
 
 import (
 	"fmt"
+	"gtree/pkg/utils"
 	"io/ioutil"
 	"log"
 	"path/filepath"
 	"time"
 
-	"gtree/pkg/utils"
+	"github.com/urfave/cli/v2"
 )
 
-// GList struct definition
+// GetListFlags - Get flags for List
+func GetListFlags() []cli.Flag {
+	flags := []cli.Flag{
+		&cli.BoolFlag{
+			Name:    "size",
+			Aliases: []string{"S"},
+			Usage:   "display file size",
+		},
+		&cli.BoolFlag{
+			Name:    "total",
+			Aliases: []string{"T"},
+			Usage:   "display file total size",
+		},
+		&cli.StringFlag{
+			Name:  "path",
+			Usage: "with specified path",
+			Value: ".",
+		},
+		&cli.StringSliceFlag{
+			Name:    "pattern",
+			Aliases: []string{"p"},
+			Usage:   "with specified wildcard",
+		},
+		&cli.StringSliceFlag{
+			Name:    "ignore",
+			Aliases: []string{"i"},
+			Usage:   "ignore specified patterns",
+		},
+		&cli.StringSliceFlag{
+			Name:    "ignore-dir",
+			Aliases: []string{"I"},
+			Usage:   "ignore specified directory",
+		},
+	}
+
+	return flags
+}
+
+// GList Struct Definition
 type List struct {
-	ShowFileSize  bool
-	ShowTotalSize bool
-	StartPath     string
-	Pattern       string
-	IgnoreDir     string
-	IgnoreFile    string
+	ShowFileSize    bool
+	ShowTotalSize   bool
+	StartPath       string
+	PatternSlice    []string
+	IgnoreFileSlice []string
+	IgnoreDirSlice  []string
 
 	color utils.Color
 }
 
-// displayFileSize - convert and return the fileSize
+// displayFileSize - Convert and return the fileSize
 func (gl *List) displayFileSize(size int64) string {
 	var m float64 = 1024
 	var result string
@@ -40,7 +79,7 @@ func (gl *List) displayFileSize(size int64) string {
 	return gl.color.Green + result + gl.color.Reset
 }
 
-// ListAllFiles - function to dispaly all the file paths
+// ListAllFiles - Function to dispaly all the file paths
 func (gl *List) listAllFiles(prefixPad string, path string) {
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
@@ -51,21 +90,17 @@ func (gl *List) listAllFiles(prefixPad string, path string) {
 	for idx, file := range files {
 		if file.IsDir() {
 			fmt.Println(padding+"|---", file.Name())
-			if file.Name() != gl.IgnoreDir {
+			if !utils.IsSliceContainsStr(gl.IgnoreDirSlice, file.Name()) {
 				gl.listAllFiles(padding+"|   ", filepath.Join(path, file.Name()))
 			}
 
 		} else {
-			if gl.Pattern != "" {
-				if match, _ := filepath.Match(gl.Pattern, file.Name()); !match {
-					continue
-				}
+			if len(gl.PatternSlice) > 0 && !utils.IsSliceContainsFileMatch(gl.PatternSlice, file.Name()) {
+				continue
 			}
 
-			if gl.IgnoreFile != "" {
-				if match, _ := filepath.Match(gl.IgnoreFile, file.Name()); match {
-					continue
-				}
+			if utils.IsSliceContainsFileMatch(gl.IgnoreFileSlice, file.Name()) {
+				continue
 			}
 
 			var paddingFinal string
@@ -115,6 +150,7 @@ func (gl *List) showTotalSize() {
 	}
 }
 
+// loopFileSize
 func (gl *List) loopFileSize(path string, ch chan int) int64 {
 	var sum int64 = 0
 	files, err := ioutil.ReadDir(path)
@@ -127,16 +163,12 @@ func (gl *List) loopFileSize(path string, ch chan int) int64 {
 		if file.IsDir() {
 			sum += gl.loopFileSize(filepath.Join(path, file.Name()), ch)
 		} else {
-			if gl.Pattern != "" {
-				if match, _ := filepath.Match(gl.Pattern, file.Name()); !match {
-					continue
-				}
+			if len(gl.PatternSlice) > 0 && !utils.IsSliceContainsFileMatch(gl.PatternSlice, file.Name()) {
+				continue
 			}
 
-			if gl.IgnoreFile != "" {
-				if match, _ := filepath.Match(gl.IgnoreFile, file.Name()); match {
-					continue
-				}
+			if utils.IsSliceContainsFileMatch(gl.IgnoreFileSlice, file.Name()) {
+				continue
 			}
 
 			sum += file.Size()
@@ -147,7 +179,7 @@ func (gl *List) loopFileSize(path string, ch chan int) int64 {
 	return sum
 }
 
-// sumFileSize - sum the file size
+// sumFileSize - Sum the file size
 func (gl *List) sumFileSize(ch chan int, ans chan int64) {
 	sum := gl.loopFileSize(gl.StartPath, ch)
 	ans <- sum

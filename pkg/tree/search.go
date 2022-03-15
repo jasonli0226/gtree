@@ -3,13 +3,14 @@ package tree
 import (
 	"bufio"
 	"fmt"
+	"gtree/pkg/utils"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"regexp"
 
-	"gtree/pkg/utils"
+	"github.com/urfave/cli/v2"
 )
 
 type SearchDisplayMode uint8
@@ -19,15 +20,65 @@ const (
 	SearchDisplayFileMode
 )
 
-// Search - Search specified Files
+// GetSearchFlags - Get Flags for Search
+func GetSearchFlags() []cli.Flag {
+	flags := []cli.Flag{
+		&cli.StringFlag{
+			Name:  "path",
+			Usage: "with specified path",
+			Value: ".",
+		},
+		&cli.StringSliceFlag{
+			Name:    "ignore-dir",
+			Aliases: []string{"I"},
+			Usage:   "ignore specified directory",
+		},
+		&cli.StringSliceFlag{
+			Name:    "pattern",
+			Aliases: []string{"p"},
+			Usage:   "with specified wildcard",
+		},
+		&cli.BoolFlag{
+			Name:    "file-mode",
+			Aliases: []string{"M"},
+			Usage:   "display file mode - directory or file",
+		},
+		&cli.BoolFlag{
+			Name:    "file-search",
+			Aliases: []string{"f"},
+			Usage:   "enable file-search mode: search with the content of files",
+		},
+		&cli.StringFlag{
+			Name:    "target",
+			Aliases: []string{"t"},
+			Usage:   "with specified target (for file-search mode only)",
+			Value:   "jason_is_handsome",
+		},
+		&cli.IntFlag{
+			Name:    "line",
+			Aliases: []string{"l"},
+			Usage:   "number of lines to display (for file-search mode only)",
+			Value:   1,
+		},
+		&cli.BoolFlag{
+			Name:    "no-recursive",
+			Aliases: []string{"nR"},
+			Usage:   "no recursive on searching",
+		},
+	}
+
+	return flags
+}
+
+// Search - Search Specified Files
 type Search struct {
 	Target           string
-	IgnoreDir        string
 	Mode             SearchDisplayMode
-	Pattern          string
 	IsSearchFile     bool
 	NumOfLineDisplay int
 	NoRecursive      bool
+	IgnoreDirSlice   []string
+	PatternSlice     []string
 
 	color               utils.Color
 	fileRead            int
@@ -35,7 +86,8 @@ type Search struct {
 	targetCount         int
 }
 
-func (s *Search) basicSearch(path string) {
+// basicSearch - Basic Search Mode
+func (gs *Search) basicSearch(path string) {
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
 		log.Fatal(err)
@@ -45,33 +97,29 @@ func (s *Search) basicSearch(path string) {
 		path := filepath.Join(path, file.Name())
 
 		isFound := true
-		if s.Pattern != "" {
-			if match, _ := filepath.Match(s.Pattern, file.Name()); !match {
-				isFound = false
-			}
+		if len(gs.PatternSlice) > 0 && !utils.IsSliceContainsFileMatch(gs.PatternSlice, file.Name()) {
+			isFound = false
 		}
 
 		if isFound {
-			if s.Mode != SearchDisplayNormal {
+			if gs.Mode != SearchDisplayNormal {
 				if file.IsDir() {
-					fmt.Print(s.color.Green + "[Directory] \t" + s.color.Reset)
+					fmt.Print(gs.color.Green + "[Directory] \t" + gs.color.Reset)
 				} else {
-					fmt.Print(s.color.Green + "[File] \t" + s.color.Reset)
+					fmt.Print(gs.color.Green + "[File] \t" + gs.color.Reset)
 				}
 			}
 			fmt.Println(path)
 		}
 
-		if file.IsDir() {
-			isIgnoreDir := s.IgnoreDir != "" && file.Name() == s.IgnoreDir
-			if !isIgnoreDir && !s.NoRecursive {
-				s.basicSearch(path)
-			}
+		if file.IsDir() && !gs.NoRecursive && !utils.IsSliceContainsStr(gs.IgnoreDirSlice, file.Name()) {
+			gs.basicSearch(path)
 		}
 	}
 }
 
-func (s *Search) fileSearch(path string) {
+// fileSearch - File Search Mode
+func (gs *Search) fileSearch(path string) {
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
 		log.Fatal(err)
@@ -81,30 +129,29 @@ func (s *Search) fileSearch(path string) {
 		path := filepath.Join(path, file.Name())
 
 		if !file.IsDir() {
-			if s.Pattern != "" {
-				if match, _ := filepath.Match(s.Pattern, file.Name()); match {
-					s.fileRead++
-					s.scanFile(path)
+			if len(gs.PatternSlice) > 0 {
+				if utils.IsSliceContainsFileMatch(gs.PatternSlice, file.Name()) {
+					gs.scanFile(path)
 				}
 			} else {
-				s.scanFile(path)
+				gs.scanFile(path)
 			}
 			continue
 		}
 
-		if s.NoRecursive {
+		if gs.NoRecursive {
 			continue
 		}
 
-		isIgnoreDir := s.IgnoreDir != "" && file.Name() == s.IgnoreDir
-		if !isIgnoreDir {
-			s.fileSearch(path)
+		if !utils.IsSliceContainsStr(gs.IgnoreDirSlice, file.Name()) {
+			gs.fileSearch(path)
 		}
 	}
 }
 
-func (s *Search) scanFile(path string) {
-	lineSlice := make([]string, s.NumOfLineDisplay)
+// scanFile - Scan a single file
+func (gs *Search) scanFile(path string) {
+	lineSlice := make([]string, gs.NumOfLineDisplay)
 	lastCounterFound := -1
 	counter := 0
 
@@ -113,6 +160,7 @@ func (s *Search) scanFile(path string) {
 		log.Fatal(err)
 	}
 
+	gs.fileRead++
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
@@ -121,14 +169,14 @@ func (s *Search) scanFile(path string) {
 
 	for scanner.Scan() {
 		line := scanner.Text()
-		matched, err := regexp.MatchString(s.Target, line)
+		matched, err := regexp.MatchString(gs.Target, line)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		if matched {
 			if lastCounterFound == -1 {
-				fmt.Println(s.color.Yellow + "Reading File - " + path + s.color.Reset)
+				fmt.Println(gs.color.Yellow + "Reading File - " + path + gs.color.Reset)
 			}
 			fmt.Println()
 
@@ -136,15 +184,15 @@ func (s *Search) scanFile(path string) {
 				fmt.Println(item)
 			}
 
-			fmt.Println(s.color.Green + line + s.color.Reset)
+			fmt.Println(gs.color.Green + line + gs.color.Reset)
 			lastCounterFound = counter
-			s.targetCount++
-		} else if lastCounterFound != -1 && counter-lastCounterFound <= s.NumOfLineDisplay {
+			gs.targetCount++
+		} else if lastCounterFound != -1 && counter-lastCounterFound <= gs.NumOfLineDisplay {
 			fmt.Println(line)
 		}
 
 		counter++
-		if counter <= s.NumOfLineDisplay {
+		if counter <= gs.NumOfLineDisplay {
 			lineSlice[counter-1] = line
 		} else {
 			lineSlice = lineSlice[1:]
@@ -157,25 +205,25 @@ func (s *Search) scanFile(path string) {
 	}
 
 	if lastCounterFound != -1 {
-		s.fileWithTargetCount++
+		gs.fileWithTargetCount++
 		fmt.Println()
 	}
 }
 
 // Run - Start to Run
-func (s *Search) Run(path string) {
-	s.color = utils.Color{}
-	s.color.Init()
+func (gs *Search) Run(path string) {
+	gs.color = utils.Color{}
+	gs.color.Init()
 
-	if s.IsSearchFile {
-		s.fileSearch(path)
-		fmt.Print(s.color.Blue)
+	if gs.IsSearchFile {
+		gs.fileSearch(path)
+		fmt.Print(gs.color.Blue)
 		fmt.Println("[Report]")
-		fmt.Println("File(s) Read : \t\t", s.fileRead)
-		fmt.Println("File(s) with Target : \t", s.fileWithTargetCount)
-		fmt.Println("Target Line Found : \t", s.targetCount)
-		fmt.Print(s.color.Reset)
+		fmt.Println("File(s) Read : \t\t", gs.fileRead)
+		fmt.Println("File(s) with Target : \t", gs.fileWithTargetCount)
+		fmt.Println("Target Line Found : \t", gs.targetCount)
+		fmt.Print(gs.color.Reset)
 	} else {
-		s.basicSearch(path)
+		gs.basicSearch(path)
 	}
 }

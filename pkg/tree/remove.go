@@ -6,7 +6,39 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/urfave/cli/v2"
 )
+
+// GetRemoveFlags - Get the flags for Remove
+func GetRemoveFlags() []cli.Flag {
+	flags := []cli.Flag{
+		&cli.BoolFlag{
+			Name:    "recursive",
+			Aliases: []string{"r"},
+			Usage:   "in recursive mode",
+		},
+		&cli.StringFlag{
+			Name:    "target",
+			Aliases: []string{"t"},
+			Usage:   "with specified directories/files name",
+			Value:   "jason_is_handsome",
+		},
+		&cli.StringFlag{
+			Name:  "path",
+			Usage: "with specified path",
+			Value: ".",
+		},
+		&cli.StringFlag{
+			Name:    "pattern",
+			Aliases: []string{"p"},
+			Usage:   "remove with specified wildcard",
+			Value:   "",
+		},
+	}
+
+	return flags
+}
 
 // Remove - Remove Folders/Files
 type Remove struct {
@@ -16,7 +48,7 @@ type Remove struct {
 }
 
 // Run - Run to remove folders/files
-func (r *Remove) Run(path string) {
+func (gr *Remove) Run(path string) {
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
 		log.Fatal(err)
@@ -24,8 +56,8 @@ func (r *Remove) Run(path string) {
 
 	for _, file := range files {
 		path := filepath.Join(path, file.Name())
-		isTarget := r.Target != "" && file.Name() == r.Target
-		isPattern, _ := filepath.Match(r.Pattern, file.Name())
+		isTarget := gr.Target != "" && file.Name() == gr.Target
+		isPattern, _ := filepath.Match(gr.Pattern, file.Name())
 
 		if isTarget || isPattern {
 			if file.IsDir() {
@@ -35,8 +67,8 @@ func (r *Remove) Run(path string) {
 				os.Remove(path)
 				fmt.Println("Deleted file ======== \t", path)
 			}
-		} else if file.IsDir() && r.IsRecursive {
-			r.Run(path)
+		} else if file.IsDir() && gr.IsRecursive {
+			gr.Run(path)
 		}
 	}
 }

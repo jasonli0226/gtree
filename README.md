@@ -1,6 +1,6 @@
 # gTree
 
-Latest Version: `1.1.7`
+Latest Version: `1.1.8`
 
 Updated Log:
 
@@ -16,6 +16,7 @@ Updated Log:
 1.0.7       gtree search - added search report
 
 1.1.7       upgrade to `github.com/urfave/cli/v2`
+1.1.8       update string flags to string slice flags
 
 ```
 
@@ -36,6 +37,9 @@ gtree sc -f -t main() -p \*.ts
 
 ```bash
 go build -o build
+
+# Mac Build in Windows
+docker run --rm -v "${PWD}:/usr/src/app" -w /usr/src/app golang:1.17 env GOOS=darwin GOARCH=amd64 go build -o build
 
 ```
 
