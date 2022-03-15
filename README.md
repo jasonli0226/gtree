@@ -9,8 +9,10 @@ Updated Log:
 1.0.1       added search command
 1.0.2       update search command - added wildcard search
 1.0.3       added colorization
-1.0.4       update search command - added `no-recursive` \
+1.0.4       update search command - added `--no-recursive` \
             and fixed reading dir as file issue
+1.0.5       gtree search - fixed recursive function wrongly invoked
+1.0.6       gtree search - fixed not working without `--pattern` issue
 
 ```
 

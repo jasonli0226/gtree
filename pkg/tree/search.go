@@ -40,26 +40,27 @@ func (s *Search) basicSearch(path string) {
 	for _, file := range files {
 		path := filepath.Join(path, file.Name())
 
+		isFound := true
 		if s.Pattern != "" {
-			if match, _ := filepath.Match(s.Pattern, file.Name()); match {
-				if s.Mode != SearchDisplayNormal {
-					if file.IsDir() {
-						fmt.Print(s.color.Green + "[Directory] \t" + s.color.Reset)
-					} else {
-						fmt.Print(s.color.Green + "[File] \t" + s.color.Reset)
-					}
-				}
-				fmt.Println(path)
+			if match, _ := filepath.Match(s.Pattern, file.Name()); !match {
+				isFound = false
 			}
 		}
 
-		if s.NoRecursive {
-			continue
+		if isFound {
+			if s.Mode != SearchDisplayNormal {
+				if file.IsDir() {
+					fmt.Print(s.color.Green + "[Directory] \t" + s.color.Reset)
+				} else {
+					fmt.Print(s.color.Green + "[File] \t" + s.color.Reset)
+				}
+			}
+			fmt.Println(path)
 		}
 
 		isIgnoreDir := s.IgnoreDir != "" && file.Name() == s.IgnoreDir
-		if file.IsDir() && !isIgnoreDir {
-			s.Run(path)
+		if file.IsDir() && !isIgnoreDir && !s.NoRecursive {
+			s.basicSearch(path)
 		}
 	}
 }
@@ -78,17 +79,19 @@ func (s *Search) fileSearch(path string) {
 				if match, _ := filepath.Match(s.Pattern, file.Name()); match {
 					s.scanFile(path)
 				}
-				continue
+			} else {
+				s.scanFile(path)
 			}
+			continue
+		}
 
-			if s.NoRecursive {
-				continue
-			}
+		if s.NoRecursive {
+			continue
+		}
 
-			isIgnoreDir := s.IgnoreDir != "" && file.Name() == s.IgnoreDir
-			if !isIgnoreDir {
-				s.Run(path)
-			}
+		isIgnoreDir := s.IgnoreDir != "" && file.Name() == s.IgnoreDir
+		if !isIgnoreDir {
+			s.fileSearch(path)
 		}
 	}
 }
@@ -106,6 +109,8 @@ func (s *Search) scanFile(path string) {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
+	buf := make([]byte, 0, 64*1024)
+	scanner.Buffer(buf, 1024*1024)
 
 	for scanner.Scan() {
 		line := scanner.Text()

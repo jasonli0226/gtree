@@ -16,7 +16,7 @@ func main() {
 		2. Search for specified Files
 		3. Remove Directories/Files
 		`
-	app.Version = "1.0.4"
+	app.Version = "1.0.6"
 	app.Commands = []cli.Command{
 		{
 			Name:      "list",
