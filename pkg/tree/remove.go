@@ -14,7 +14,7 @@ import (
 func GetRemoveFlags() []cli.Flag {
 	flags := []cli.Flag{
 		&cli.BoolFlag{
-			Name:    "recursive",
+			Name:    "Recursive",
 			Aliases: []string{"R"},
 			Usage:   "Remove within directories recursively. By default, links are not followed.",
 		},
@@ -33,7 +33,7 @@ func GetRemoveFlags() []cli.Flag {
 			Name:    "pattern",
 			Aliases: []string{"p"},
 			Usage:   "Remove with specified wildcard",
-			Value:   "",
+			Value:   "jason_is_handsome",
 		},
 	}
 
