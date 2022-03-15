@@ -48,7 +48,7 @@ func main() {
 			Flags:   tree.GetRemoveFlags(),
 			Action: func(c *cli.Context) error {
 				path := c.String("path")
-				isRecursive := c.Bool("recursive")
+				isRecursive := c.Bool("Recursive")
 				target := c.String("target")
 				pattern := c.String("pattern")
 

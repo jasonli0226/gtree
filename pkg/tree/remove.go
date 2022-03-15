@@ -22,7 +22,7 @@ func GetRemoveFlags() []cli.Flag {
 			Name:    "target",
 			Aliases: []string{"t"},
 			Usage:   "Remove with specified directories/files name",
-			Value:   "jason_is_handsome",
+			Value:   "",
 		},
 		&cli.StringFlag{
 			Name:  "path",
