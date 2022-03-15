@@ -5,10 +5,12 @@ Latest Version: `1.0.0`
 Updated Log:
 
 ```
-1.0.0     init version
-1.0.1     added search command
-1.0.2     update search command - added wildcard search
-1.0.3     added colorization
+1.0.0       init version
+1.0.1       added search command
+1.0.2       update search command - added wildcard search
+1.0.3       added colorization
+1.0.4       update search command - added `no-recursive` \
+            and fixed reading dir as file issue
 
 ```
 

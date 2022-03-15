@@ -27,6 +27,7 @@ type Search struct {
 	Pattern          string
 	IsSearchFile     bool
 	NumOfLineDisplay int
+	NoRecursive      bool
 	color            utils.Color
 }
 
@@ -52,6 +53,10 @@ func (s *Search) basicSearch(path string) {
 			}
 		}
 
+		if s.NoRecursive {
+			continue
+		}
+
 		isIgnoreDir := s.IgnoreDir != "" && file.Name() == s.IgnoreDir
 		if file.IsDir() && !isIgnoreDir {
 			s.Run(path)
@@ -68,15 +73,22 @@ func (s *Search) fileSearch(path string) {
 	for _, file := range files {
 		path := filepath.Join(path, file.Name())
 
-		if s.Pattern != "" {
-			if match, _ := filepath.Match(s.Pattern, file.Name()); match {
-				s.scanFile(path)
+		if !file.IsDir() {
+			if s.Pattern != "" {
+				if match, _ := filepath.Match(s.Pattern, file.Name()); match {
+					s.scanFile(path)
+				}
+				continue
 			}
-		}
 
-		isIgnoreDir := s.IgnoreDir != "" && file.Name() == s.IgnoreDir
-		if file.IsDir() && !isIgnoreDir {
-			s.Run(path)
+			if s.NoRecursive {
+				continue
+			}
+
+			isIgnoreDir := s.IgnoreDir != "" && file.Name() == s.IgnoreDir
+			if !isIgnoreDir {
+				s.Run(path)
+			}
 		}
 	}
 }
