@@ -1,6 +1,6 @@
 # gTree
 
-Latest Version: `1.1.8`
+Latest Version: `1.1.9`
 
 Updated Log:
 
@@ -17,6 +17,7 @@ Updated Log:
 
 1.1.7       upgrade to `github.com/urfave/cli/v2`
 1.1.8       update string flags to string slice flags
+1.1.9       fixed bugs - negative number input for search numOfLine
 
 ```
 

@@ -176,6 +176,7 @@ func (gl *List) loopFileSize(path string, ch chan int) int64 {
 			time.Sleep(time.Millisecond * 50)
 		}
 	}
+
 	return sum
 }
 

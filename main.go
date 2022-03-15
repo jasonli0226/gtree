@@ -3,6 +3,7 @@ package main
 import (
 	"gtree/pkg/tree"
 	"log"
+	"math"
 	"os"
 
 	"github.com/urfave/cli/v2"
@@ -17,7 +18,7 @@ func main() {
 		2. Search for specified Files
 		3. Remove Directories/Files
 		`
-	app.Version = "1.1.8"
+	app.Version = "1.1.9"
 	app.Commands = []*cli.Command{
 		{
 			Name:    "list",
@@ -69,7 +70,7 @@ func main() {
 				patternSlice := c.StringSlice("pattern")
 				mode := tree.SearchDisplayNormal
 				isSearchFile := c.Bool("file-search")
-				numOfLine := c.Int("line")
+				numOfLine := int(math.Max(float64(c.Int("line")), 1))
 				noRecursive := c.Bool("no-recursive")
 
 				if c.Bool("file-mode") {
