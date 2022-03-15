@@ -135,7 +135,7 @@ func getSearchFlags() []cli.Flag {
 		},
 		&cli.BoolFlag{
 			Name:    "no-recursive",
-			Aliases: []string{"R"},
+			Aliases: []string{"nR"},
 			Usage:   "no recursive on searching",
 		},
 	}
