@@ -4,7 +4,7 @@ Latest Version: `1.0.0`
 
 Updated Log:
 
-```
+```txt
 1.0.0       init version
 1.0.1       added search command
 1.0.2       update search command - added wildcard search
