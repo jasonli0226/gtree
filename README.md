@@ -20,7 +20,7 @@ Updated Log:
 1.1.9       fixed bugs - negative number input for search numOfLine
 1.1.10      added colorization for windows
 1.1.11      add checking for symlinks, symlinks are not allowed \
-            \\\
+            add line number for search
 
 ```
 

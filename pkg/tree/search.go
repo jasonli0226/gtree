@@ -7,6 +7,7 @@ import (
 	"gtree/pkg/utils"
 	"io/ioutil"
 	"log"
+	"math"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -177,24 +178,31 @@ func (gs *Search) scanFile(path string) {
 			log.Fatal(err)
 		}
 
+		counter++
+
 		if matched {
 			if lastCounterFound == -1 {
 				fmt.Println(color.Yellow + "Reading File - " + path + color.Reset)
 			}
 			fmt.Println()
 
-			for _, item := range lineSlice {
-				fmt.Println(item)
+			for i, item := range lineSlice {
+				if i == counter-1 {
+					break
+				}
+				lineNum := math.Max(float64(counter-gs.NumOfLineDisplay), 1)
+				if lastCounterFound == -1 || int(lineNum)+i > lastCounterFound+gs.NumOfLineDisplay {
+					fmt.Println(fmt.Sprintf("%d \t", int(lineNum)+i) + item)
+				}
 			}
 
-			fmt.Println(color.Green + line + color.Reset)
+			fmt.Println(color.Green + fmt.Sprintf("%d \t", counter) + line + color.Reset)
 			lastCounterFound = counter
 			gs.targetCount++
 		} else if lastCounterFound != -1 && counter-lastCounterFound <= gs.NumOfLineDisplay {
-			fmt.Println(line)
+			fmt.Println(fmt.Sprintf("%d \t", counter) + line)
 		}
 
-		counter++
 		if counter <= gs.NumOfLineDisplay {
 			lineSlice[counter-1] = line
 		} else {
