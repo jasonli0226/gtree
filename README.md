@@ -1,6 +1,6 @@
 # gTree
 
-Latest Version: `1.0.7`
+Latest Version: `1.1.7`
 
 Updated Log:
 
@@ -14,6 +14,19 @@ Updated Log:
 1.0.5       gtree search - fixed recursive function wrongly invoked
 1.0.6       gtree search - fixed not working without `--pattern` issue
 1.0.7       gtree search - added search report
+
+1.1.7       upgrade to `github.com/urfave/cli/v2`
+
+```
+
+&nbsp;
+
+## Issue List
+
+- [ ] Handling on Special Char
+
+```bash
+gtree sc -f -t main() -p \*.ts
 
 ```
 

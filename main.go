@@ -2,9 +2,10 @@ package main
 
 import (
 	"gtree/pkg/tree"
+	"log"
 	"os"
 
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli/v2"
 )
 
 func main() {
@@ -16,13 +17,13 @@ func main() {
 		2. Search for specified Files
 		3. Remove Directories/Files
 		`
-	app.Version = "1.0.7"
-	app.Commands = []cli.Command{
+	app.Version = "1.1.7"
+	app.Commands = []*cli.Command{
 		{
-			Name:      "list",
-			ShortName: "ls",
-			Usage:     "List all Directories/Files",
-			Flags:     getListFlags(),
+			Name:    "list",
+			Aliases: []string{"ls"},
+			Usage:   "List all Directories/Files",
+			Flags:   getListFlags(),
 			Action: func(c *cli.Context) error {
 				showFileSize := c.Bool("size")
 				showTotalSize := c.Bool("total")
@@ -40,10 +41,10 @@ func main() {
 			},
 		},
 		{
-			Name:      "remove",
-			ShortName: "rm",
-			Usage:     "Remove Directories/Files",
-			Flags:     getRemoveFlags(),
+			Name:    "remove",
+			Aliases: []string{"rm"},
+			Usage:   "Remove Directories/Files",
+			Flags:   getRemoveFlags(),
 			Action: func(c *cli.Context) error {
 				path := c.String("path")
 				isRecursive := c.Bool("recursive")
@@ -57,10 +58,10 @@ func main() {
 			},
 		},
 		{
-			Name:      "search",
-			ShortName: "sc",
-			Usage:     "Search for specified Files",
-			Flags:     getSearchFlags(),
+			Name:    "search",
+			Aliases: []string{"sc"},
+			Usage:   "Search for specified Files",
+			Flags:   getSearchFlags(),
 			Action: func(c *cli.Context) error {
 				path := c.String("path")
 				target := c.String("target")
@@ -85,47 +86,57 @@ func main() {
 		},
 	}
 
-	app.Run(os.Args)
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func getSearchFlags() []cli.Flag {
 	flags := []cli.Flag{
-		cli.StringFlag{
+		&cli.StringFlag{
 			Name:  "path",
 			Usage: "with specified path",
 			Value: ".",
 		},
-		cli.StringFlag{
-			Name:  "ignore-dir, I",
-			Usage: "ignore specified directory",
-			Value: "",
+		&cli.StringFlag{
+			Name:    "ignore-dir",
+			Aliases: []string{"I"},
+			Usage:   "ignore specified directory",
+			Value:   "",
 		},
-		cli.StringFlag{
-			Name:  "pattern, p",
-			Usage: "with specified wildcard",
-			Value: "",
+		&cli.StringFlag{
+			Name:    "pattern",
+			Aliases: []string{"p"},
+			Usage:   "with specified wildcard",
+			Value:   "",
 		},
-		cli.BoolFlag{
-			Name:  "file-mode, M",
-			Usage: "display file mode - directory or file",
+		&cli.BoolFlag{
+			Name:    "file-mode",
+			Aliases: []string{"M"},
+			Usage:   "display file mode - directory or file",
 		},
-		cli.BoolFlag{
-			Name:  "file-search, f",
-			Usage: "enable file-search mode: search with the content of files",
+		&cli.BoolFlag{
+			Name:    "file-search",
+			Aliases: []string{"f"},
+			Usage:   "enable file-search mode: search with the content of files",
 		},
-		cli.StringFlag{
-			Name:  "target, t",
-			Usage: "with specified target (for file-search mode only)",
-			Value: "jason_is_handsome",
+		&cli.StringFlag{
+			Name:    "target",
+			Aliases: []string{"t"},
+			Usage:   "with specified target (for file-search mode only)",
+			Value:   "jason_is_handsome",
 		},
-		cli.IntFlag{
-			Name:  "line, l",
-			Usage: "number of lines to display (for file-search mode only)",
-			Value: 1,
+		&cli.IntFlag{
+			Name:    "line",
+			Aliases: []string{"l"},
+			Usage:   "number of lines to display (for file-search mode only)",
+			Value:   1,
 		},
-		cli.BoolFlag{
-			Name:  "no-recursive, R",
-			Usage: "no recursive on searching",
+		&cli.BoolFlag{
+			Name:    "no-recursive",
+			Aliases: []string{"R"},
+			Usage:   "no recursive on searching",
 		},
 	}
 
@@ -134,33 +145,38 @@ func getSearchFlags() []cli.Flag {
 
 func getListFlags() []cli.Flag {
 	flags := []cli.Flag{
-		cli.BoolFlag{
-			Name:  "size, S",
-			Usage: "display file size",
+		&cli.BoolFlag{
+			Name:    "size",
+			Aliases: []string{"S"},
+			Usage:   "display file size",
 		},
-		cli.BoolFlag{
-			Name:  "total, T",
-			Usage: "display file total size",
+		&cli.BoolFlag{
+			Name:    "total",
+			Aliases: []string{"T"},
+			Usage:   "display file total size",
 		},
-		cli.StringFlag{
-			Name:  "ignore, i",
-			Usage: "ignore specified patterns",
-			Value: "",
+		&cli.StringFlag{
+			Name:    "ignore",
+			Aliases: []string{"i"},
+			Usage:   "ignore specified patterns",
+			Value:   "",
 		},
-		cli.StringFlag{
-			Name:  "ignore-dir, I",
-			Usage: "ignore specified directory",
-			Value: "",
+		&cli.StringFlag{
+			Name:    "ignore-dir",
+			Aliases: []string{"I"},
+			Usage:   "ignore specified directory",
+			Value:   "",
 		},
-		cli.StringFlag{
+		&cli.StringFlag{
 			Name:  "path",
 			Usage: "with specified path",
 			Value: ".",
 		},
-		cli.StringFlag{
-			Name:  "pattern, p",
-			Usage: "with specified wildcard",
-			Value: "",
+		&cli.StringFlag{
+			Name:    "pattern",
+			Aliases: []string{"p"},
+			Usage:   "with specified wildcard",
+			Value:   "",
 		},
 	}
 
@@ -169,24 +185,27 @@ func getListFlags() []cli.Flag {
 
 func getRemoveFlags() []cli.Flag {
 	flags := []cli.Flag{
-		cli.BoolFlag{
-			Name:  "recursive, r",
-			Usage: "in recursive mode",
+		&cli.BoolFlag{
+			Name:    "recursive",
+			Aliases: []string{"r"},
+			Usage:   "in recursive mode",
 		},
-		cli.StringFlag{
-			Name:  "target, t",
-			Usage: "with specified directories/files name",
-			Value: "jason_is_handsome",
+		&cli.StringFlag{
+			Name:    "target",
+			Aliases: []string{"t"},
+			Usage:   "with specified directories/files name",
+			Value:   "jason_is_handsome",
 		},
-		cli.StringFlag{
+		&cli.StringFlag{
 			Name:  "path",
 			Usage: "with specified path",
 			Value: ".",
 		},
-		cli.StringFlag{
-			Name:  "pattern, p",
-			Usage: "remove with specified wildcard",
-			Value: "",
+		&cli.StringFlag{
+			Name:    "pattern",
+			Aliases: []string{"p"},
+			Usage:   "remove with specified wildcard",
+			Value:   "",
 		},
 	}
 
