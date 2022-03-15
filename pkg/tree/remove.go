@@ -1,4 +1,4 @@
-package utils
+package tree
 
 import (
 	"fmt"
@@ -30,10 +30,10 @@ func (r *Remove) Run(path string) {
 		if isTarget || isPattern {
 			if file.IsDir() {
 				os.RemoveAll(path)
-				fmt.Println("deleted directory ======== \t", path)
+				fmt.Println("Deleted directory ======== \t", path)
 			} else if !file.IsDir() {
 				os.Remove(path)
-				fmt.Println("deleted file ======== \t", path)
+				fmt.Println("Deleted file ======== \t", path)
 			}
 		} else {
 			if file.IsDir() && r.IsRecursive {

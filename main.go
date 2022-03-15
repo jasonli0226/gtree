@@ -1,7 +1,7 @@
 package main
 
 import (
-	"gtree/utils"
+	"gtree/pkg/tree"
 	"os"
 
 	"gopkg.in/urfave/cli.v1"
@@ -16,7 +16,7 @@ func main() {
 		2. Search for specified Files
 		3. Remove Directories/Files
 		`
-	app.Version = "1.0.1"
+	app.Version = "1.0.3"
 	app.Commands = []cli.Command{
 		{
 			Name:      "list",
@@ -31,7 +31,7 @@ func main() {
 				path := c.String("path")
 				pattern := c.String("pattern")
 
-				var list = utils.List{ShowFileSize: showFileSize, StartPath: path,
+				var list = tree.List{ShowFileSize: showFileSize, StartPath: path,
 					ShowTotalSize: showTotalSize, IgnoreDir: ignoreDir,
 					Pattern: pattern, IgnoreFile: ignoreFile}
 
@@ -50,7 +50,7 @@ func main() {
 				target := c.String("target")
 				pattern := c.String("pattern")
 
-				var remove = utils.Remove{IsRecursive: isRecursive, Target: target, Pattern: pattern}
+				var remove = tree.Remove{IsRecursive: isRecursive, Target: target, Pattern: pattern}
 
 				remove.Run(path)
 				return nil
@@ -65,13 +65,17 @@ func main() {
 				path := c.String("path")
 				target := c.String("target")
 				ignoreDir := c.String("ignore-dir")
-				mode := utils.SearchDisplayNormal
+				pattern := c.String("pattern")
+				mode := tree.SearchDisplayNormal
+				isSearchFile := c.Bool("file-search")
+				numOfLine := c.Int("line")
 
-				if c.Bool("file-mode") {
-					mode = utils.SearchDisplayFileMode
+				if c.Bool("display-mode") {
+					mode = tree.SearchDisplayFileMode
 				}
 
-				var search = utils.Search{Target: target, IgnoreDir: ignoreDir, Mode: mode}
+				var search = tree.Search{Target: target, IgnoreDir: ignoreDir, Mode: mode,
+					Pattern: pattern, IsSearchFile: isSearchFile, NumOfLineDisplay: numOfLine}
 
 				search.Run(path)
 				return nil
@@ -90,18 +94,32 @@ func getSearchFlags() []cli.Flag {
 			Value: ".",
 		},
 		cli.StringFlag{
-			Name:  "target, t",
-			Usage: "with specified target (file)",
-			Value: "jason_is_handsome",
-		},
-		cli.StringFlag{
 			Name:  "ignore-dir, I",
 			Usage: "ignore specified directory",
 			Value: "",
 		},
+		cli.StringFlag{
+			Name:  "pattern, p",
+			Usage: "with specified wildcard",
+			Value: "",
+		},
 		cli.BoolFlag{
-			Name:  "file-mode, f",
+			Name:  "display-mode, M",
 			Usage: "display file mode - directory or file",
+		},
+		cli.BoolFlag{
+			Name:  "file-search, f",
+			Usage: "file-search mode: search with the content of files",
+		},
+		cli.StringFlag{
+			Name:  "target, t",
+			Usage: "with specified target (for file-search mode only)",
+			Value: "jason_is_handsome",
+		},
+		cli.IntFlag{
+			Name:  "line, l",
+			Usage: "number of lines to display (for file-search mode only)",
+			Value: 1,
 		},
 	}
 
@@ -111,11 +129,11 @@ func getSearchFlags() []cli.Flag {
 func getListFlags() []cli.Flag {
 	flags := []cli.Flag{
 		cli.BoolFlag{
-			Name:  "size, s",
+			Name:  "size, S",
 			Usage: "display file size",
 		},
 		cli.BoolFlag{
-			Name:  "total, t",
+			Name:  "total, T",
 			Usage: "display file total size",
 		},
 		cli.StringFlag{

@@ -7,6 +7,8 @@ Updated Log:
 ```
 1.0.0     init version
 1.0.1     added search command
+1.0.2     update search command - added wildcard search
+1.0.3     added colorization
 
 ```
 
@@ -35,6 +37,6 @@ go build -o build
 
 - [x] (2022-03) search - search for specified files
 
-- [ ] (2022-03) search - search for specified file patterns/matches
+- [x] (2022-03) search - search for specified file patterns/matches
 
 &nbsp;

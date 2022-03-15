@@ -1,4 +1,4 @@
-package utils
+package tree
 
 import (
 	"fmt"
@@ -6,6 +6,8 @@ import (
 	"log"
 	"path/filepath"
 	"time"
+
+	"gtree/pkg/utils"
 )
 
 // GList struct definition
@@ -16,6 +18,8 @@ type List struct {
 	Pattern       string
 	IgnoreDir     string
 	IgnoreFile    string
+
+	color utils.Color
 }
 
 // displayFileSize - convert and return the fileSize
@@ -23,15 +27,17 @@ func (gl *List) displayFileSize(size int64) string {
 	var m float64 = 1024
 	var result string
 	if size < 1024 {
-		return fmt.Sprintf("[%.0f B]", float64(size))
+		return gl.color.Green + fmt.Sprintf("[%.0f B]", float64(size)) + gl.color.Reset
 	}
+
 	kb := float64(size) / m
 	if kb < 1024 {
 		result = fmt.Sprintf("[%.2f KB]", kb)
 	} else {
 		result = fmt.Sprintf("[%.2f MB]", kb/m)
 	}
-	return result
+
+	return gl.color.Green + result + gl.color.Reset
 }
 
 // ListAllFiles - function to dispaly all the file paths
@@ -40,6 +46,7 @@ func (gl *List) listAllFiles(prefixPad string, path string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	padding := prefixPad
 	for idx, file := range files {
 		if file.IsDir() {
@@ -150,6 +157,9 @@ func (gl *List) sumFileSize(ch chan int, ans chan int64) {
 
 // Run - Run the proccess
 func (gl *List) Run() {
+	gl.color = utils.Color{}
+	gl.color.Init()
+
 	if !gl.ShowTotalSize {
 		gl.listAllFiles("  ", gl.StartPath)
 		return
