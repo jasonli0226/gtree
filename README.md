@@ -1,6 +1,6 @@
 # gTree
 
-Latest Version: `1.0.0`
+Latest Version: `1.0.7`
 
 Updated Log:
 
@@ -13,6 +13,7 @@ Updated Log:
             and fixed reading dir as file issue
 1.0.5       gtree search - fixed recursive function wrongly invoked
 1.0.6       gtree search - fixed not working without `--pattern` issue
+1.0.7       gtree search - added search report
 
 ```
 

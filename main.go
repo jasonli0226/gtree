@@ -16,7 +16,7 @@ func main() {
 		2. Search for specified Files
 		3. Remove Directories/Files
 		`
-	app.Version = "1.0.6"
+	app.Version = "1.0.7"
 	app.Commands = []cli.Command{
 		{
 			Name:      "list",
@@ -71,7 +71,7 @@ func main() {
 				numOfLine := c.Int("line")
 				noRecursive := c.Bool("no-recursive")
 
-				if c.Bool("display-mode") {
+				if c.Bool("file-mode") {
 					mode = tree.SearchDisplayFileMode
 				}
 
@@ -106,12 +106,12 @@ func getSearchFlags() []cli.Flag {
 			Value: "",
 		},
 		cli.BoolFlag{
-			Name:  "display-mode, M",
+			Name:  "file-mode, M",
 			Usage: "display file mode - directory or file",
 		},
 		cli.BoolFlag{
 			Name:  "file-search, f",
-			Usage: "file-search mode: search with the content of files",
+			Usage: "enable file-search mode: search with the content of files",
 		},
 		cli.StringFlag{
 			Name:  "target, t",

@@ -28,7 +28,11 @@ type Search struct {
 	IsSearchFile     bool
 	NumOfLineDisplay int
 	NoRecursive      bool
-	color            utils.Color
+
+	color               utils.Color
+	fileRead            int
+	fileWithTargetCount int
+	targetCount         int
 }
 
 func (s *Search) basicSearch(path string) {
@@ -58,9 +62,11 @@ func (s *Search) basicSearch(path string) {
 			fmt.Println(path)
 		}
 
-		isIgnoreDir := s.IgnoreDir != "" && file.Name() == s.IgnoreDir
-		if file.IsDir() && !isIgnoreDir && !s.NoRecursive {
-			s.basicSearch(path)
+		if file.IsDir() {
+			isIgnoreDir := s.IgnoreDir != "" && file.Name() == s.IgnoreDir
+			if !isIgnoreDir && !s.NoRecursive {
+				s.basicSearch(path)
+			}
 		}
 	}
 }
@@ -77,6 +83,7 @@ func (s *Search) fileSearch(path string) {
 		if !file.IsDir() {
 			if s.Pattern != "" {
 				if match, _ := filepath.Match(s.Pattern, file.Name()); match {
+					s.fileRead++
 					s.scanFile(path)
 				}
 			} else {
@@ -131,6 +138,7 @@ func (s *Search) scanFile(path string) {
 
 			fmt.Println(s.color.Green + line + s.color.Reset)
 			lastCounterFound = counter
+			s.targetCount++
 		} else if lastCounterFound != -1 && counter-lastCounterFound <= s.NumOfLineDisplay {
 			fmt.Println(line)
 		}
@@ -149,6 +157,7 @@ func (s *Search) scanFile(path string) {
 	}
 
 	if lastCounterFound != -1 {
+		s.fileWithTargetCount++
 		fmt.Println()
 	}
 }
@@ -160,6 +169,12 @@ func (s *Search) Run(path string) {
 
 	if s.IsSearchFile {
 		s.fileSearch(path)
+		fmt.Print(s.color.Blue)
+		fmt.Println("[Report]")
+		fmt.Println("File(s) Read : \t\t", s.fileRead)
+		fmt.Println("File(s) with Target : \t", s.fileWithTargetCount)
+		fmt.Println("Target Line Found : \t", s.targetCount)
+		fmt.Print(s.color.Reset)
 	} else {
 		s.basicSearch(path)
 	}

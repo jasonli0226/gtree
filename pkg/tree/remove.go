@@ -35,10 +35,8 @@ func (r *Remove) Run(path string) {
 				os.Remove(path)
 				fmt.Println("Deleted file ======== \t", path)
 			}
-		} else {
-			if file.IsDir() && r.IsRecursive {
-				r.Run(path)
-			}
+		} else if file.IsDir() && r.IsRecursive {
+			r.Run(path)
 		}
 	}
 }
