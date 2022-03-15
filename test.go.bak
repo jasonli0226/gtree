@@ -1,0 +1,20 @@
+package main
+
+import (
+	"fmt"
+	"io/ioutil"
+	"os"
+)
+
+func main() {
+	files, _ := ioutil.ReadDir("test")
+
+	for _, file := range files {
+		fmt.Println(file.Name(), file.Mode(), file.IsDir())
+
+		isSymLink := file.Mode()&os.ModeSymlink == os.ModeSymlink
+		if isSymLink {
+			fmt.Println("SymLink")
+		}
+	}
+}

@@ -3,6 +3,7 @@ package tree
 import (
 	"bufio"
 	"fmt"
+	"gtree/pkg/color"
 	"gtree/pkg/utils"
 	"io/ioutil"
 	"log"
@@ -80,7 +81,6 @@ type Search struct {
 	IgnoreDirSlice   []string
 	PatternSlice     []string
 
-	color               utils.Color
 	fileRead            int
 	fileWithTargetCount int
 	targetCount         int
@@ -104,11 +104,14 @@ func (gs *Search) basicSearch(path string) {
 		if isFound {
 			if gs.Mode != SearchDisplayNormal {
 				if file.IsDir() {
-					fmt.Print(gs.color.Green + "[Directory] \t" + gs.color.Reset)
+					fmt.Print(color.Green + "[Directory] \t" + color.Reset)
+				} else if file.Mode()&os.ModeSymlink == os.ModeSymlink {
+					fmt.Print(color.Green + "[Symlink] \t" + color.Reset)
 				} else {
-					fmt.Print(gs.color.Green + "[File] \t" + gs.color.Reset)
+					fmt.Print(color.Green + "[File] \t" + color.Reset)
 				}
 			}
+
 			fmt.Println(path)
 		}
 
@@ -128,7 +131,7 @@ func (gs *Search) fileSearch(path string) {
 	for _, file := range files {
 		path := filepath.Join(path, file.Name())
 
-		if !file.IsDir() {
+		if !file.IsDir() && !(file.Mode()&os.ModeSymlink == os.ModeSymlink) {
 			if len(gs.PatternSlice) > 0 {
 				if utils.IsSliceContainsFileMatch(gs.PatternSlice, file.Name()) {
 					gs.scanFile(path)
@@ -176,7 +179,7 @@ func (gs *Search) scanFile(path string) {
 
 		if matched {
 			if lastCounterFound == -1 {
-				fmt.Println(gs.color.Yellow + "Reading File - " + path + gs.color.Reset)
+				fmt.Println(color.Yellow + "Reading File - " + path + color.Reset)
 			}
 			fmt.Println()
 
@@ -184,7 +187,7 @@ func (gs *Search) scanFile(path string) {
 				fmt.Println(item)
 			}
 
-			fmt.Println(gs.color.Green + line + gs.color.Reset)
+			fmt.Println(color.Green + line + color.Reset)
 			lastCounterFound = counter
 			gs.targetCount++
 		} else if lastCounterFound != -1 && counter-lastCounterFound <= gs.NumOfLineDisplay {
@@ -212,17 +215,15 @@ func (gs *Search) scanFile(path string) {
 
 // Run - Start to Run
 func (gs *Search) Run(path string) {
-	gs.color = utils.Color{}
-	gs.color.Init()
 
 	if gs.IsSearchFile {
 		gs.fileSearch(path)
-		fmt.Print(gs.color.Blue)
+		fmt.Print(color.Blue)
 		fmt.Println("[Report]")
 		fmt.Println("File(s) Read : \t\t", gs.fileRead)
 		fmt.Println("File(s) with Target : \t", gs.fileWithTargetCount)
 		fmt.Println("Target Line Found : \t", gs.targetCount)
-		fmt.Print(gs.color.Reset)
+		fmt.Print(color.Reset)
 	} else {
 		gs.basicSearch(path)
 	}

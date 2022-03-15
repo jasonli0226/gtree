@@ -61,7 +61,7 @@ func main() {
 		{
 			Name:    "search",
 			Aliases: []string{"sc"},
-			Usage:   "Search for specified Files",
+			Usage:   "Search for specified Files. By default, links are not followed.",
 			Flags:   tree.GetSearchFlags(),
 			Action: func(c *cli.Context) error {
 				path := c.String("path")

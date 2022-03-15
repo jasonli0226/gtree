@@ -15,24 +15,24 @@ func GetRemoveFlags() []cli.Flag {
 	flags := []cli.Flag{
 		&cli.BoolFlag{
 			Name:    "recursive",
-			Aliases: []string{"r"},
-			Usage:   "in recursive mode",
+			Aliases: []string{"R"},
+			Usage:   "Remove within directories recursively. By default, links are not followed.",
 		},
 		&cli.StringFlag{
 			Name:    "target",
 			Aliases: []string{"t"},
-			Usage:   "with specified directories/files name",
+			Usage:   "Remove with specified directories/files name",
 			Value:   "jason_is_handsome",
 		},
 		&cli.StringFlag{
 			Name:  "path",
-			Usage: "with specified path",
+			Usage: "Remove with specified path",
 			Value: ".",
 		},
 		&cli.StringFlag{
 			Name:    "pattern",
 			Aliases: []string{"p"},
-			Usage:   "remove with specified wildcard",
+			Usage:   "Remove with specified wildcard",
 			Value:   "",
 		},
 	}
@@ -59,11 +59,13 @@ func (gr *Remove) Run(path string) {
 		isTarget := gr.Target != "" && file.Name() == gr.Target
 		isPattern, _ := filepath.Match(gr.Pattern, file.Name())
 
+		isSymLink := file.Mode()&os.ModeSymlink == os.ModeSymlink
+
 		if isTarget || isPattern {
 			if file.IsDir() {
 				os.RemoveAll(path)
 				fmt.Println("Deleted directory ======== \t", path)
-			} else if !file.IsDir() {
+			} else if !isSymLink && !file.IsDir() {
 				os.Remove(path)
 				fmt.Println("Deleted file ======== \t", path)
 			}
