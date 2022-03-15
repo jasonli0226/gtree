@@ -1,12 +1,5 @@
 package utils
 
-import "runtime"
-
-// func Color() {
-// 	colorMap := make(map[string]string)
-// 	colorMap["Reset"] = "\033[0m"
-// }
-
 // Color - Color Mapping
 type Color struct {
 	Reset  string
@@ -22,16 +15,13 @@ type Color struct {
 
 // Init - Constructor for Color
 func (c *Color) Init() {
-
-	if runtime.GOOS != "windows" {
-		c.Reset = "\033[0m"
-		c.Red = "\033[31m"
-		c.Green = "\033[32m"
-		c.Yellow = "\033[33m"
-		c.Blue = "\033[34m"
-		c.Purple = "\033[35m"
-		c.Cyan = "\033[36m"
-		c.Gray = "\033[37m"
-		c.White = "\033[97m"
-	}
+	c.Reset = "\033[0m"
+	c.Red = "\033[31m"
+	c.Green = "\033[32m"
+	c.Yellow = "\033[33m"
+	c.Blue = "\033[34m"
+	c.Purple = "\033[35m"
+	c.Cyan = "\033[36m"
+	c.Gray = "\033[37m"
+	c.White = "\033[97m"
 }
