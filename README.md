@@ -11,9 +11,9 @@ Updated Log:
 1.0.3       added colorization for mac
 1.0.4       update search command - added `--no-recursive` \
             and fixed reading dir as file issue
-1.0.5       gtree search - fixed recursive function wrongly invoked
-1.0.6       gtree search - fixed not working without `--pattern` issue
-1.0.7       gtree search - added search report
+1.0.5       search - fixed recursive function wrongly invoked
+1.0.6       search - fixed not working without `--pattern` issue
+1.0.7       search - added search report
 
 1.1.7       upgrade to `github.com/urfave/cli/v2`
 1.1.8       update string flags to string slice flags
