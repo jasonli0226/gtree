@@ -27,28 +27,28 @@ func GetSearchFlags() []cli.Flag {
 	flags := []cli.Flag{
 		&cli.StringFlag{
 			Name:  "path",
-			Usage: "with specified path",
+			Usage: "With specified path",
 			Value: ".",
 		},
 		&cli.StringSliceFlag{
 			Name:    "ignore-dir",
 			Aliases: []string{"I"},
-			Usage:   "ignore specified directory",
+			Usage:   "Ignore specified directory",
 		},
 		&cli.StringSliceFlag{
 			Name:    "pattern",
 			Aliases: []string{"p"},
-			Usage:   "with specified wildcard",
+			Usage:   "With specified wildcard",
 		},
 		&cli.BoolFlag{
 			Name:    "file-mode",
 			Aliases: []string{"M"},
-			Usage:   "display file mode - directory or file",
+			Usage:   "Display file mode - directory or file",
 		},
 		&cli.BoolFlag{
 			Name:    "file-search",
 			Aliases: []string{"f"},
-			Usage:   "enable file-search mode: search with the content of files",
+			Usage:   "Enable file-search mode: search with the content of files",
 		},
 		&cli.StringFlag{
 			Name:    "target",
@@ -59,13 +59,18 @@ func GetSearchFlags() []cli.Flag {
 		&cli.IntFlag{
 			Name:    "line",
 			Aliases: []string{"l"},
-			Usage:   "number of lines to display (for file-search mode only)",
+			Usage:   "Number of lines to display (for file-search mode only)",
 			Value:   1,
 		},
 		&cli.BoolFlag{
 			Name:    "no-recursive",
 			Aliases: []string{"nR"},
-			Usage:   "no recursive on searching",
+			Usage:   "No recursive on searching",
+		},
+		&cli.BoolFlag{
+			Name:    "copy",
+			Aliases: []string{"c"},
+			Usage:   "Search file in copy mode. Line number will not be displayed",
 		},
 	}
 
@@ -77,6 +82,7 @@ type Search struct {
 	Target           string
 	Mode             SearchDisplayMode
 	IsSearchFile     bool
+	IsCopy           bool
 	NumOfLineDisplay int
 	NoRecursive      bool
 	IgnoreDirSlice   []string
@@ -192,15 +198,15 @@ func (gs *Search) scanFile(path string) {
 				}
 				lineNum := math.Max(float64(counter-gs.NumOfLineDisplay), 1)
 				if lastCounterFound == -1 || int(lineNum)+i > lastCounterFound+gs.NumOfLineDisplay {
-					fmt.Println(fmt.Sprintf("%d \t", int(lineNum)+i) + item)
+					gs.displayScanLine(int(lineNum)+i, item, false)
 				}
 			}
 
-			fmt.Println(color.Green + fmt.Sprintf("%d \t", counter) + line + color.Reset)
+			gs.displayScanLine(counter, line, true)
 			lastCounterFound = counter
 			gs.targetCount++
 		} else if lastCounterFound != -1 && counter-lastCounterFound <= gs.NumOfLineDisplay {
-			fmt.Println(fmt.Sprintf("%d \t", counter) + line)
+			gs.displayScanLine(counter, line, false)
 		}
 
 		if counter <= gs.NumOfLineDisplay {
@@ -218,6 +224,18 @@ func (gs *Search) scanFile(path string) {
 	if lastCounterFound != -1 {
 		gs.fileWithTargetCount++
 		fmt.Println()
+	}
+}
+
+func (gs *Search) displayScanLine(lineNum int, line string, isFound bool) {
+	lineNumStr := ""
+	if !gs.IsCopy {
+		lineNumStr = fmt.Sprintf("%d \t", lineNum)
+	}
+	if isFound {
+		fmt.Println(color.Green + lineNumStr + line + color.Reset)
+	} else {
+		fmt.Println(lineNumStr + line)
 	}
 }
 

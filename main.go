@@ -18,7 +18,7 @@ func main() {
 		2. Search for specified Files
 		3. Remove Directories/Files
 		`
-	app.Version = "1.1.11"
+	app.Version = "1.1.12"
 	app.Commands = []*cli.Command{
 		{
 			Name:    "list",
@@ -72,13 +72,14 @@ func main() {
 				isSearchFile := c.Bool("file-search")
 				numOfLine := int(math.Max(float64(c.Int("line")), 1))
 				noRecursive := c.Bool("no-recursive")
+				isCopy := c.Bool("copy")
 
 				if c.Bool("file-mode") {
 					mode = tree.SearchDisplayFileMode
 				}
 
 				var search = tree.Search{Target: target, IgnoreDirSlice: ignoreDirSlice, Mode: mode,
-					PatternSlice: patternSlice, IsSearchFile: isSearchFile,
+					PatternSlice: patternSlice, IsSearchFile: isSearchFile, IsCopy: isCopy,
 					NumOfLineDisplay: numOfLine, NoRecursive: noRecursive}
 
 				search.Run(path)

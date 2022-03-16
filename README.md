@@ -1,6 +1,6 @@
 # gTree
 
-Latest Version: `1.1.10`
+Latest Version: `1.1.12`
 
 Updated Log:
 
@@ -21,6 +21,7 @@ Updated Log:
 1.1.10      added colorization for windows
 1.1.11      add checking for symlinks, symlinks are not allowed \
             add line number for search
+1.1.12      search - added copy mode
 
 ```
 
