@@ -81,7 +81,6 @@ func GetSearchFlags() []cli.Flag {
 type Search struct {
 	Target           string
 	Mode             SearchDisplayMode
-	IsSearchFile     bool
 	IsCopy           bool
 	NumOfLineDisplay int
 	NoRecursive      bool
@@ -240,9 +239,9 @@ func (gs *Search) displayScanLine(lineNum int, line string, isFound bool) {
 }
 
 // Run - Start to Run
-func (gs *Search) Run(path string) {
+func (gs *Search) Run(path string, isSearchFile bool) {
 
-	if gs.IsSearchFile {
+	if isSearchFile {
 		gs.fileSearch(path)
 		fmt.Print(color.Blue)
 		fmt.Println("[Report]")

@@ -52,9 +52,7 @@ func GetListFlags() []cli.Flag {
 
 // GList Struct Definition
 type List struct {
-	ShowFileSize    bool
-	ShowTotalSize   bool
-	StartPath       string
+	IsShowFileSize  bool
 	PatternSlice    []string
 	IgnoreFileSlice []string
 	IgnoreDirSlice  []string
@@ -109,7 +107,7 @@ func (gl *List) listAllFiles(prefixPad string, path string) {
 				paddingFinal = padding + "|---"
 			}
 
-			if gl.ShowFileSize {
+			if gl.IsShowFileSize {
 				fmt.Println(paddingFinal, file.Name(), gl.displayFileSize(file.Size()))
 			} else {
 				fmt.Println(paddingFinal, file.Name())
@@ -119,12 +117,12 @@ func (gl *List) listAllFiles(prefixPad string, path string) {
 }
 
 // showTotalSize - Show total size of the files
-func (gl *List) showTotalSize() {
+func (gl *List) showTotalSize(startPath string) {
 	ch := make(chan int)
 	ans := make(chan int64)
 	var fileNum int64 = 0
 
-	go gl.sumFileSize(ch, ans)
+	go gl.sumFileSize(startPath, ch, ans)
 
 	for {
 		select {
@@ -180,19 +178,19 @@ func (gl *List) loopFileSize(path string, ch chan int) int64 {
 }
 
 // sumFileSize - Sum the file size
-func (gl *List) sumFileSize(ch chan int, ans chan int64) {
-	sum := gl.loopFileSize(gl.StartPath, ch)
+func (gl *List) sumFileSize(startPath string, ch chan int, ans chan int64) {
+	sum := gl.loopFileSize(startPath, ch)
 	ans <- sum
 	close(ch)
 	close(ans)
 }
 
 // Run - Run the proccess
-func (gl *List) Run() {
-
-	if !gl.ShowTotalSize {
-		gl.listAllFiles("  ", gl.StartPath)
+func (gl *List) Run(startPath string, isShowTotalSize bool) {
+	if isShowTotalSize {
+		gl.showTotalSize(startPath)
 		return
 	}
-	gl.showTotalSize()
+
+	gl.listAllFiles("  ", startPath)
 }

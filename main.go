@@ -17,6 +17,7 @@ func main() {
 		1. List all Directories/Files
 		2. Search for specified Files
 		3. Remove Directories/Files
+		4. Make Directories/Files
 		`
 	app.Version = "1.1.12"
 	app.Commands = []*cli.Command{
@@ -26,18 +27,17 @@ func main() {
 			Usage:   "List all Directories/Files",
 			Flags:   tree.GetListFlags(),
 			Action: func(c *cli.Context) error {
-				showFileSize := c.Bool("size")
-				showTotalSize := c.Bool("total")
+				isShowFileSize := c.Bool("size")
+				isShowTotalSize := c.Bool("total")
 				ignoreDirSlice := c.StringSlice("ignore-dir")
 				ignoreFileSlice := c.StringSlice("ignore")
-				path := c.String("path")
+				startPath := c.String("path")
 				patternSlice := c.StringSlice("pattern")
 
-				var list = tree.List{ShowFileSize: showFileSize, StartPath: path,
-					ShowTotalSize: showTotalSize, IgnoreDirSlice: ignoreDirSlice,
+				var list = tree.List{IsShowFileSize: isShowFileSize, IgnoreDirSlice: ignoreDirSlice,
 					PatternSlice: patternSlice, IgnoreFileSlice: ignoreFileSlice}
 
-				list.Run()
+				list.Run(startPath, isShowTotalSize)
 				return nil
 			},
 		},
@@ -47,14 +47,14 @@ func main() {
 			Usage:   "Remove Directories/Files",
 			Flags:   tree.GetRemoveFlags(),
 			Action: func(c *cli.Context) error {
-				path := c.String("path")
+				startPath := c.String("path")
 				isRecursive := c.Bool("Recursive")
 				target := c.String("target")
 				pattern := c.String("pattern")
 
 				var remove = tree.Remove{IsRecursive: isRecursive, Target: target, Pattern: pattern}
 
-				remove.Run(path)
+				remove.Run(startPath)
 				return nil
 			},
 		},
@@ -64,7 +64,7 @@ func main() {
 			Usage:   "Search for specified Files. By default, links are not followed.",
 			Flags:   tree.GetSearchFlags(),
 			Action: func(c *cli.Context) error {
-				path := c.String("path")
+				startPath := c.String("path")
 				target := c.String("target")
 				ignoreDirSlice := c.StringSlice("ignore-dir")
 				patternSlice := c.StringSlice("pattern")
@@ -78,11 +78,11 @@ func main() {
 					mode = tree.SearchDisplayFileMode
 				}
 
-				var search = tree.Search{Target: target, IgnoreDirSlice: ignoreDirSlice, Mode: mode,
-					PatternSlice: patternSlice, IsSearchFile: isSearchFile, IsCopy: isCopy,
+				var search = tree.Search{Target: target, IgnoreDirSlice: ignoreDirSlice,
+					Mode: mode, PatternSlice: patternSlice, IsCopy: isCopy,
 					NumOfLineDisplay: numOfLine, NoRecursive: noRecursive}
 
-				search.Run(path)
+				search.Run(startPath, isSearchFile)
 				return nil
 			},
 		},
