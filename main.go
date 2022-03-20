@@ -19,7 +19,7 @@ func main() {
 		3. Remove Directories/Files
 		4. Make Directories/Files
 		`
-	app.Version = "1.1.12"
+	app.Version = "1.1.13"
 	app.Commands = []*cli.Command{
 		{
 			Name:    "list",
@@ -44,8 +44,11 @@ func main() {
 		{
 			Name:    "remove",
 			Aliases: []string{"rm"},
-			Usage:   "Remove Directories/Files",
-			Flags:   tree.GetRemoveFlags(),
+			Usage: `Remove Directories/Files
+			Examples:
+			1 - gtree rm -t node_modules -R
+			2 - gtree rm -p *.ts -R`,
+			Flags: tree.GetRemoveFlags(),
 			Action: func(c *cli.Context) error {
 				startPath := c.String("path")
 				isRecursive := c.Bool("Recursive")
@@ -59,10 +62,13 @@ func main() {
 			},
 		},
 		{
-			Name:    "search",
+			Name:    "scan",
 			Aliases: []string{"sc"},
-			Usage:   "Search for specified Files. By default, links are not followed.",
-			Flags:   tree.GetSearchFlags(),
+			Usage: `Scan for specified Files. By default, links are not followed.
+			Examples:
+			1 - gtree sc -I .git -p *.ts
+			2 - gtree sc -I .git -p *.go -f -t fun -l 3`,
+			Flags: tree.GetSearchFlags(),
 			Action: func(c *cli.Context) error {
 				startPath := c.String("path")
 				target := c.String("target")
@@ -83,6 +89,22 @@ func main() {
 					NumOfLineDisplay: numOfLine, NoRecursive: noRecursive}
 
 				search.Run(startPath, isSearchFile)
+				return nil
+			},
+		}, {
+			Name:    "make",
+			Aliases: []string{"mk"},
+			Usage: `Make directories or files
+			Examples:
+			1 - gtree mk -d layer_01/layer_01_01/hello.ts
+			2 - gtree mk -d layer_01\layer_01_02\world.ts`,
+			Flags: tree.GetMakeFlags(),
+			Action: func(c *cli.Context) error {
+				destination := c.String("dest")
+
+				var make = tree.Make{}
+
+				make.Run(destination)
 				return nil
 			},
 		},
