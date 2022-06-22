@@ -1,6 +1,6 @@
 # gTree
 
-Latest Version: `1.1.13`
+Latest Version: `1.1.14`
 
 Updated Log:
 
@@ -23,6 +23,7 @@ Updated Log:
             added line number for search
 1.1.12      search - added copy mode
 1.1.13      added new feature - make directory / files
+1.1.14      search - added default ignore directory, deleted "file" flag
 
 ```
 

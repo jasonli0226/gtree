@@ -19,7 +19,7 @@ func main() {
 		3. Remove Directories/Files
 		4. Make Directories/Files
 		`
-	app.Version = "1.1.13"
+	app.Version = "1.1.14"
 	app.Commands = []*cli.Command{
 		{
 			Name:    "list",
@@ -75,7 +75,6 @@ func main() {
 				ignoreDirSlice := c.StringSlice("ignore-dir")
 				patternSlice := c.StringSlice("pattern")
 				mode := tree.SearchDisplayNormal
-				isSearchFile := c.Bool("file-search")
 				numOfLine := int(math.Max(float64(c.Int("line")), 1))
 				noRecursive := c.Bool("no-recursive")
 				isCopy := c.Bool("copy")
@@ -88,7 +87,7 @@ func main() {
 					Mode: mode, PatternSlice: patternSlice, IsCopy: isCopy,
 					NumOfLineDisplay: numOfLine, NoRecursive: noRecursive}
 
-				search.Run(startPath, isSearchFile)
+				search.Run(startPath)
 				return nil
 			},
 		}, {

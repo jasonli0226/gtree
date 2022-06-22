@@ -45,16 +45,11 @@ func GetSearchFlags() []cli.Flag {
 			Aliases: []string{"M"},
 			Usage:   "Display file mode - directory or file",
 		},
-		&cli.BoolFlag{
-			Name:    "file-search",
-			Aliases: []string{"f"},
-			Usage:   "Enable file-search mode: search with the content of files",
-		},
 		&cli.StringFlag{
 			Name:    "target",
 			Aliases: []string{"t"},
 			Usage:   "with specified target (for file-search mode only)",
-			Value:   "jason_is_handsome",
+			Value:   "",
 		},
 		&cli.IntFlag{
 			Name:    "line",
@@ -239,9 +234,11 @@ func (gs *Search) displayScanLine(lineNum int, line string, isFound bool) {
 }
 
 // Run - Start to Run
-func (gs *Search) Run(path string, isSearchFile bool) {
+func (gs *Search) Run(path string) {
+	// add default ignore directory
+	gs.IgnoreDirSlice = append(gs.IgnoreDirSlice, "node_modules", ".git")
 
-	if isSearchFile {
+	if gs.Target != "" {
 		gs.fileSearch(path)
 		fmt.Print(color.Blue)
 		fmt.Println("[Report]")
