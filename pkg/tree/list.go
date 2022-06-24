@@ -185,8 +185,11 @@ func (gl *List) sumFileSize(startPath string, ch chan int, ans chan int64) {
 	close(ans)
 }
 
-// Run - Run the proccess
+// Run - Run the process
 func (gl *List) Run(startPath string, isShowTotalSize bool) {
+	// add default ignore directory
+	gl.IgnoreDirSlice = append(gl.IgnoreDirSlice, "node_modules", ".git")
+
 	if isShowTotalSize {
 		gl.showTotalSize(startPath)
 		return
