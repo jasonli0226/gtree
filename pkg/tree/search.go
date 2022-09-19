@@ -3,8 +3,6 @@ package tree
 import (
 	"bufio"
 	"fmt"
-	"gtree/pkg/color"
-	"gtree/pkg/utils"
 	"io/ioutil"
 	"log"
 	"math"
@@ -12,6 +10,8 @@ import (
 	"path/filepath"
 	"regexp"
 
+	"github.com/jasonli0226/gtree/pkg/color"
+	"github.com/jasonli0226/gtree/pkg/utils"
 	"github.com/urfave/cli/v2"
 )
 

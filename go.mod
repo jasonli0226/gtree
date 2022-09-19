@@ -1,4 +1,4 @@
-module gtree
+module github.com/jasonli0226/gtree
 
 go 1.15
 

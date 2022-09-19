@@ -2,13 +2,13 @@ package tree
 
 import (
 	"fmt"
-	"gtree/pkg/color"
-	"gtree/pkg/utils"
 	"io/ioutil"
 	"log"
 	"path/filepath"
 	"time"
 
+	"github.com/jasonli0226/gtree/pkg/color"
+	"github.com/jasonli0226/gtree/pkg/utils"
 	"github.com/urfave/cli/v2"
 )
 

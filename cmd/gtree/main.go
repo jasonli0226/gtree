@@ -1,11 +1,11 @@
 package main
 
 import (
-	"gtree/pkg/tree"
 	"log"
 	"math"
 	"os"
 
+	"github.com/jasonli0226/gtree/pkg/tree"
 	"github.com/urfave/cli/v2"
 )
 
